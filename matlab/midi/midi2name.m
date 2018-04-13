@@ -43,7 +43,7 @@ switch noteInOctave
         note = '?';
 end
 
-note = sprintf('%s%d', note, octave);
+note = string(sprintf('%s%d', note, octave));
 
 end
 
