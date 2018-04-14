@@ -1,7 +1,10 @@
-function T = getPeriod( y, Fs )
-%GETPERIOD Calculates the fundemantal period of the waveform
+function [note, stdDev, time] = getNote( y, Fs )
+%GETNOTE Calculates the fundemantal note of the waveform
 %   Uses YIN pitch detection to calculate the fundamental period of the
-%   signal y (sampling frequency Fs).
+%   signal y (sampling frequency Fs) and converts it to a MIDI note number.
+%   Also returns the standard deviation % of the estimated frequencies
+%   corresponding to 'note'.
+%   Also returns the time taken to estimate the note in milliseconds.
 
 % Guitar parameters
 note_min = 40;      % Lowest note:  E2, 6th string open
@@ -13,21 +16,30 @@ T_min = Fs/midi2freq(note_max);
 
 % Period range to allow for at least 5 times the longest period
 T_range = round(4.5*T_min):round(5.5*T_max);
-%T_range = 0:round(5.5*T_max);
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 %   Design Choices
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-n0 = 11000;         % Starting sample
 W = 2000;           % Window size
 threshold = 0.2;    % Threshold value for the CMNDIFF
+num_ind = 100;       % The minimum number of indices that must be below the threshold
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+tic;    % Start timer
+
+% Choose starting sample to be the loudest point (was: 11000)
+n0  = find(y == max(y));
 
 % Calculate the CMNDIFF
 cmnd = cmndiff(y, n0, W, T_range);
 
 % Extract the (indices of) parts of CMND that were below the threshold
+% If necessary, increase the threshold until enough indices are found
 ind = find(cmnd < threshold);
+while length(ind) < num_ind
+    threshold = 1.1*threshold;
+    ind = find(cmnd < threshold);
+end
 
 % Iterate through indices and work out periods as you go
 dip_start = ind(1);         % First index in dip
@@ -65,7 +77,20 @@ for k = length(T):-1:2
     T(k) = T(k) - T(k-1);
 end
 
-T = T(2:end);   % Ignore first value
+T = T(2:end);                           % Ignore first value
+[notes, errors] = freq2midi(1./T);      % Convert periods to MIDI note numbers
+[note, F] = mode(notes);                % Take the mode as the fundamental
+
+time = 1000*toc; % Stop timer, record time in ms
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+%   Error Analysis
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+maxNote = max(notes);       % Highest note found
+numWrongNotes = length(notes) - F;  % F = no. of fundamentals
+
+normErrors = errors(find(notes == note))/midi2freq(note);   % Normalised frequency errors
+stdDev = 100*sqrt( sum(normErrors.^2)/F );                  % Std deviation as percentage
 
 end
 
