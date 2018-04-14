@@ -20,14 +20,14 @@ T_range = round(4.5*T_min):round(5.5*T_max);
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 %   Design Choices
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-W = 2000;           % Window size
-threshold = 0.2;    % Threshold value for the CMNDIFF
+W = 3*T_max;         % Window size = 3 x max period expected
+threshold = 0.2;     % Threshold value for the CMNDIFF
 num_ind = 100;       % The minimum number of indices that must be below the threshold
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 tic;    % Start timer
 
-% Choose starting sample to be the loudest point (was: 11000)
+% Choose starting sample to be the loudest point
 n0  = find(y == max(y));
 
 % Calculate the CMNDIFF
