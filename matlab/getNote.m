@@ -53,18 +53,20 @@ for k = 2:length(ind)
         dip_end = ind(k);
     else
         % Not consecutive: process, and start new dip
-        
-        % Only interpolate if there are more than 3 points
+
+        % Extract dip y-values
+        i = dip_start:dip_end;                  % Indices in dip
+        c_dip = cmnd(dip_start:dip_end);        % The part of y in the dip
+        i_min = i(find(c_dip == min(c_dip)));   % Find the lowest point's index
+
+        % 3 points of more: quadratic interpolation
         if dip_end - dip_start > 2
-            % Extract dip y-values
-            i = dip_start:dip_end;                  % Indices in dip
-            c_dip = cmnd(dip_start:dip_end);        % The part of y in the dip
-            i_min = i(find(c_dip == min(c_dip)));   % Find the lowest point's index
             n3 = i_min-1:i_min+1;                   % Lowest 3 indices
             c3 = cmnd(n3);                          % Lowest 3 y values
-            n_min = interpolate(n3, c3);            % Find the local minimum sample value
-            T = [T (n_min/Fs)];                       % Save the dip time to T
+            i_min = interpolate(n3, c3);            % Find the local minimum sample value
         end
+
+        T = [T (i_min/Fs)];                       % Save the dip time to T
         
         % Start new dip
         dip_start = ind(k);
@@ -86,9 +88,6 @@ time = 1000*toc; % Stop timer, record time in ms
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 %   Error Analysis
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-maxNote = max(notes);       % Highest note found
-numWrongNotes = length(notes) - F;  % F = no. of fundamentals
-
 normErrors = errors(find(notes == note))/midi2freq(note);   % Normalised frequency errors
 stdDev = 100*sqrt( sum(normErrors.^2)/F );                  % Std deviation as percentage
 

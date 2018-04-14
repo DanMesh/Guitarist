@@ -16,6 +16,14 @@ for i = 1:N
     files(i) = strcat(dataDir, D(i).name);
 end
 
+% Error checking
+DEBUG = false;
+if DEBUG
+    files = strcat(dataDir, string('C5_1_1.m4a'));
+    N = 1;
+end
+
+
 notes = string.empty(0,N);
 stddev = zeros(1,N);
 error = zeros(1,N);
