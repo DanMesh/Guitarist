@@ -1,4 +1,4 @@
-function [note, stdDev, time] = getNote( y, Fs )
+function [note, MSE, time] = getNote( y, Fs )
 %GETNOTE Calculates the fundemantal note of the waveform
 %   Uses YIN pitch detection to calculate the fundamental period of the
 %   signal y (sampling frequency Fs) and converts it to a MIDI note number.
@@ -89,7 +89,7 @@ time = 1000*toc; % Stop timer, record time in ms
 %   Error Analysis
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 normErrors = errors(find(notes == note))/midi2freq(note);   % Normalised frequency errors
-stdDev = 100*sqrt( sum(normErrors.^2)/F );                  % Std deviation as percentage
+MSE = 100*sqrt( sum(normErrors.^2)/F );                     % Mean squared error as percentage
 
 end
 

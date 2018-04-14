@@ -49,11 +49,11 @@ while go
     y = getaudiodata(rec);  % Get data
     y = y(T_pad*Fs:end);    % Remove padding time
     
-    [midi, stddev, time] = getNote(y, Fs);
+    [midi, mse, time] = getNote(y, Fs);
     note = midi2name(midi);
     fprintf('The note played was %s.\n', note);
     fprintf('It took %.1f milliseconds.\n', time);
-    fprintf('The standard deviation was %.3f %%.\n\n', stddev);
+    fprintf('The mean squared error was %.3f %%.\n\n', mse);
     
     if plots
         figure(yFig), plot(0:1/Fs:(length(y)-1)/Fs, y);
