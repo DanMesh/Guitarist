@@ -5,7 +5,7 @@
 % Choose test parameters: - - - - - - - - - - - - - - - - - - -
 doYIN = false;
 DEBUG = false;
-EXCEL = true;       % Print results in Excel readable table
+EXCEL = false;       % Print results in Excel readable table
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 global WINDOW;

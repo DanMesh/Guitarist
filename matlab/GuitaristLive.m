@@ -4,6 +4,7 @@
 
 close all;
 addpath('./yin/');
+addpath('./cepstrum/');
 addpath('./midi/');
 
 fprintf('\n');
@@ -23,7 +24,8 @@ Fs = 44100;     % Sampling frequency
 bits = 16;      % Bits/sample
 T = 1;          % Duration (seconds)
 T_pad = 0.25;   % Padding (time to remove from start, seconds)
-plots = false;   % Plot the audio
+plots = false;  % Plot the audio
+WINDOW = 4000;  % 4000 sample window
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 rec = audiorecorder(Fs,bits,1);             % The recorder
@@ -49,11 +51,21 @@ while go
     y = getaudiodata(rec);  % Get data
     y = y(T_pad*Fs:end);    % Remove padding time
     
-    [midi, mse, time] = getNote(y, Fs);
+    % Identify with YIN:
+    [midi, error, time] = yinNote(y, Fs, WINDOW);
     note = midi2name(midi);
-    fprintf('The note played was %s.\n', note);
-    fprintf('It took %.1f milliseconds.\n', time);
-    fprintf('The mean squared error was %.3f %%.\n\n', mse);
+    fprintf('According to YIN:\n');
+    fprintf('   The note played was %s.\n', note);
+    fprintf('   It took %.1f milliseconds.\n', time);
+    fprintf('   The quantisation error was %.3f %%.\n\n', error);
+    
+    % Identify with Cepstrum:
+    [midi, error, time] = cepstrumNote(y, Fs, WINDOW);
+    note = midi2name(midi);
+    fprintf('According to CEPSTRUM:\n');
+    fprintf('   The note played was %s.\n', note);
+    fprintf('   It took %.1f milliseconds.\n', time);
+    fprintf('   The quantisation error was %.3f %%.\n\n', error);
     
     if plots
         figure(yFig), plot(0:1/Fs:(length(y)-1)/Fs, y);

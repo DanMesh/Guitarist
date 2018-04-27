@@ -29,7 +29,7 @@ W = 3*T_max;         % Window size = 3 x max period expected
 threshold = 0.2;     % Threshold value for the power ratio
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if WINTHR > 0                   % Only set window/threshold if positive
+if exist('WINDOW', 'var') && WINTHR > 0
     if WINTHR < 1               % If window/threshold is a fraction, it must be a threshold
         threshold = WINTHR;
     else                        % Otherwise, it's a window length

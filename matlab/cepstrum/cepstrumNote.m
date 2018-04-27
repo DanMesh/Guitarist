@@ -23,7 +23,7 @@ W = round(3*Fs*T_max);              % Window size = 3 x max period expected
 n0  = find(y == max(y)) + 0.1*Fs;   % Window start
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if WINDOW > 1
+if exist('WINDOW', 'var') && WINDOW > 1
     W = WINDOW;
 end
 
