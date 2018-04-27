@@ -1,5 +1,7 @@
 *.pdf
+*.xlsx
 data/
+img/
 literature/
 latex/
 test_*.m
